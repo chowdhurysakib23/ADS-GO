@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pro Ad Browser</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Roboto', sans-serif; background: #f5f5f7; color: #333; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    #container { width: 360px; max-width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; position: relative; }
+    #startScreen { padding: 40px 20px; text-align: center; }
+    #startBtn { background: #4285f4; color: #fff; border: none; padding: 12px 24px; font-size: 16px; font-weight: 500; border-radius: 24px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: background 0.3s; }
+    #startBtn:hover { background: #3367d6; }
+    #browserUI { display: none; flex-direction: column; position: relative; }
+    #toolbar { background: #fff; padding: 8px; display: flex; align-items: center; border-bottom: 1px solid #e0e0e0; }
+    .toolBtn { background: none; border: none; font-size: 18px; margin-right: 12px; cursor: pointer; color: #555; }
+    #addressBar { flex: 1; background: #f1f3f4; border-radius: 16px; padding: 6px 12px; font-size: 14px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #iframeContainer { width: 100%; aspect-ratio: 9 / 16; position: relative; }
+    iframe { width: 100%; height: 100%; border: none; }
+    #countdown {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="startScreen">
+      <h2 style="margin-bottom:16px; color:#202124;">Welcome to Pro Ad Browser</h2>
+      <button id="startBtn">Start Ad View</button>
+    </div>
+    <div id="browserUI">
+      <div id="toolbar">
+        <button class="toolBtn" id="backBtn">⟵</button>
+        <button class="toolBtn" id="forwardBtn">⟶</button>
+        <div id="addressBar">Loading...</div>
+      </div>
+      <div id="iframeContainer">
+        <div id="countdown">15s</div>
+        <iframe id="adFrame" src="" allow="autoplay; encrypted-media"></iframe>
+      </div>
+    </div>
+  </div>  <script>
+    const startBtn = document.getElementById('startBtn');
+    const startScreen = document.getElementById('startScreen');
+    const browserUI = document.getElementById('browserUI');
+    const adFrame = document.getElementById('adFrame');
+    const addressBar = document.getElementById('addressBar');
+    const backBtn = document.getElementById('backBtn');
+    const forwardBtn = document.getElementById('forwardBtn');
+    const countdownEl = document.getElementById('countdown');
+
+    const adUrl = 'https://www.profitableratecpm.com/w943aby3?key=79aedc3c66c66541cf32baccce5a0773';
+    let countdown;
+    let seconds = 15;
+
+    startBtn.addEventListener('click', () => {
+      startScreen.style.display = 'none';
+      browserUI.style.display = 'flex';
+      adFrame.src = adUrl;
+      addressBar.textContent = adUrl;
+      // start countdown
+      countdownEl.textContent = `${seconds}s`;
+      countdown = setInterval(() => {
+        seconds--;
+        countdownEl.textContent = `${seconds}s`;
+        if (seconds <= 0) {
+          clearInterval(countdown);
+          // close or go back
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.close();
+          }
+        }
+      }, 1000);
+    });
+
+    backBtn.addEventListener('click', () => {
+      adFrame.contentWindow.history.back();
+    });
+    forwardBtn.addEventListener('click', () => {
+      adFrame.contentWindow.history.forward();
+    });
+
+    adFrame.addEventListener('load', () => {
+      try {
+        addressBar.textContent = adFrame.contentWindow.location.href;
+      } catch (e) {
+        addressBar.textContent = adUrl;
+      }
+    });
+  </script></body>
+</html>
